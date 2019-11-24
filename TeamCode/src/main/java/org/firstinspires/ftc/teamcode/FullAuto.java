@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.disnodeteam.dogecv.detectors.skystone.SkystoneDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,73 +7,32 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-
-
-@Autonomous(name = "StoneAuto", group = "Autonomous")
+@Autonomous(name = "Full Autonomous", group = "Autonomous")
 //@Disabled
-public class StoneAuto extends LinearOpMode {
+public class FullAuto extends LinearOpMode {
+
+    private SkystoneDetector2 skystoneDetector = new SkystoneDetector2();
+    private StoneDetector detector = new StoneDetector();
+    private OpenCvCamera phoneCam;
+
+    String pattern = "N/A";
 
     private DcMotor tl_motor;
     private DcMotor tr_motor;
     private DcMotor bl_motor;
     private DcMotor br_motor;
 
-    private SkystoneIdentificationSample foria = new SkystoneIdentificationSample();
-    private SkystoneDetector2 skystoneDetector = new SkystoneDetector2();
-    private StoneDetector detector = new StoneDetector();
-    private OpenCvCamera phoneCam;
-
     private static final double COUNTS_PER_MOTOR_REV = 1120;
     private static final double GEAR_RATIO = 2;
     private static final double WHEEL_DIAMETER_INCHES = 2.9527559055;
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * Math.PI * GEAR_RATIO);
 
-    String pattern = "N/A";
+    ElapsedTime runtime = new ElapsedTime();
 
-    //
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private static final boolean PHONE_IS_PORTRAIT = false  ;
-
-    private static final String VUFORIA_KEY =
-            "AboXNav/////AAABmeGOS7NozU5qnTs51UZZ17g1BcHElTpLG7nsEbYufdDfWLm+ZbdqBWX7hOXxoHiu9tzNUQI4PIsRb96x9UHLizYXL8ZzqsCRKqmHx6iiGL81vuTLUyZ3yTybJ5AENkTY8h7YrKSJZnvS7W3V4EoZFxXRe4mEhxxWYsYSlBx6MEX7m9RAet8LGIf35OjCd5wzC/tSGMs+RGx+4tU+aCQkytnoaPcnEGzzt9nLu/0DypuJFc2pI+FuwGw0Y52PbDBrnb/cw+SLSRYGbYavN77to3eguAn7rG8vN0W0RrYYvkWxiRh1HY0WWtew91WaN4+hmkwWRoEFmC6CAt3kAzg1NSQWpRGXNreOlMqOf8Dr+H8j";
-
-    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
-    // We will define some constants and conversions here
-    private static final float mmPerInch        = 25.4f;
-    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
-    // Constant for Stone Target
-    private static final float stoneZ = 2.00f * mmPerInch;
-
-    // Constants for the center support targets
-    private static final float bridgeZ = 6.42f * mmPerInch;
-    private static final float bridgeY = 23 * mmPerInch;
-    private static final float bridgeX = 5.18f * mmPerInch;
-    private static final float bridgeRotY = 59;                                 // Units are degrees
-    private static final float bridgeRotZ = 180;
-
-    // Constants for perimeter targets
-    private static final float halfField = 72 * mmPerInch;
-    private static final float quadField  = 36 * mmPerInch;
-
-    // Class Members
-    private OpenGLMatrix lastLocation = null;
-    private VuforiaLocalizer vuforia = null;
-    private boolean targetVisible = false;
-    private float phoneXRotate    = 0;
-    private float phoneYRotate    = 0;
-    private float phoneZRotate    = 0;
-    //
-
-    @Override
     public void runOpMode(){
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -91,84 +49,92 @@ public class StoneAuto extends LinearOpMode {
         bl_motor = hardwareMap.dcMotor.get("bl_motor");
         br_motor = hardwareMap.dcMotor.get("br_motor");
 
-        tl_motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        bl_motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        tr_motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        br_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        tl_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        tr_motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        bl_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        br_motor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        tr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         tl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tr_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         br_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        tr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         tl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tr_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        ElapsedTime runtime = new ElapsedTime();
         runtime.reset();
-
-
 
         waitForStart();
 
         while(opModeIsActive()){
 
+            runtime.reset();
 
-
-            if(skystoneDetector.isFound()){
-                if (skystoneDetector.getScreenPosition().x < 120){
-                    pattern = "left";
-                } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160){
-                    pattern = "middle";
-                }else{
-                    pattern = "right";
+            while(runtime.milliseconds() <= 2000) {         // 2 seconds
+                if (skystoneDetector.isFound()) {
+                    if (skystoneDetector.getScreenPosition().x < 80) {
+                        pattern = "left";
+                    } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160) {
+                        pattern = "middle";
+                    } else {
+                        pattern = "right";
+                    }
                 }
-            }
 
-            telemetry.addData("X-Value: ", skystoneDetector.getScreenPosition().x);
-            telemetry.addData("Pattern: ", pattern);
-            telemetry.update();
-
-            //runtime.reset();
-
-            /*
-
-            while(!skystoneDetector.isFound() && runtime.milliseconds() <= 5000){ // go left
-                tl_motor.setPower(-0.3);
-                tr_motor.setPower(0.3);
-                bl_motor.setPower(0.3);
-                br_motor.setPower(-0.3);
-                telemetry.addData("Time Elapsed (Milliseconds): ", runtime.milliseconds());
-                telemetry.addData("Skystone? ", skystoneDetector.isFound());
+                telemetry.addData("X-Value: ", skystoneDetector.getScreenPosition().x);
+                telemetry.addData("Pattern: ", pattern);
                 telemetry.update();
             }
-            */
 
-            //encoderDrive((30 - 1) * COUNTS_PER_INCH, (30 - 1) * COUNTS_PER_INCH, (30 - 1) * COUNTS_PER_INCH, (30 - 1) * COUNTS_PER_INCH, 0.5, 10, 250);
+            runtime.reset();
 
-            //runtime.reset();
+            sleep(100);
+
+            encoderDrive(24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 0.2, 2, 250);
 
 
-            /*
-            while(!detector.isFound() || runtime.milliseconds() <= 5000){ // 5 seconds
-                tl_motor.setPower(-0.5);
-                tr_motor.setPower(0.5);
-                bl_motor.setPower(0.5);
-                br_motor.setPower(-0.5);
-                telemetry.addData("Time Elapsed (Milliseconds): ", runtime.milliseconds());
-                telemetry.addData("Stone? ", detector.isFound());
-                telemetry.update();
+            if(pattern == "left"){
+                encoderDrive(-8 * COUNTS_PER_INCH, 8 * COUNTS_PER_INCH, 8 * COUNTS_PER_INCH, -8 * COUNTS_PER_INCH, 0.1, 2, 250);
+                // use mech
+                encoderDrive(56 * COUNTS_PER_INCH, -56 * COUNTS_PER_INCH, -56 * COUNTS_PER_INCH, 56 * COUNTS_PER_INCH, 0.75, 10, 250);
+            }else if (pattern == "middle"){
+                // just use mech
+                encoderDrive(48 * COUNTS_PER_INCH, -48 * COUNTS_PER_INCH, -48 * COUNTS_PER_INCH, 48 * COUNTS_PER_INCH, 0.75, 10, 250);
+            }else{  // right but need for N/A
+                encoderDrive(8 * COUNTS_PER_INCH, -8 * COUNTS_PER_INCH, -8 * COUNTS_PER_INCH, 8 * COUNTS_PER_INCH, 0.1, 2, 250);
+                // use mech
+                encoderDrive(40 * COUNTS_PER_INCH, -40 * COUNTS_PER_INCH, -40 * COUNTS_PER_INCH, 40 * COUNTS_PER_INCH, 0.75, 10, 250);
             }
-            */
+
+            encoderDrive(-24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, -24 * COUNTS_PER_INCH, 0.75, 10, 250);
+
+            encoderDrive(-24 * COUNTS_PER_INCH, -24 * COUNTS_PER_INCH, -24 * COUNTS_PER_INCH, -24 * COUNTS_PER_INCH, 0.75, 10, 250);
+
+            encoderDrive(-48 * COUNTS_PER_INCH, 48 * COUNTS_PER_INCH, 48 * COUNTS_PER_INCH, -48 * COUNTS_PER_INCH, 0.75, 10, 250);
+
+            //encoderDrive(4 * COUNTS_PER_INCH, -4 * COUNTS_PER_INCH, -4 * COUNTS_PER_INCH, 4 * COUNTS_PER_INCH, 0.75, 2, 250);
 
 
 
 
-            //telemetry.addData("Stone? ", detector.isFound());
-            //telemetry.update();
 
+            encoderDrive(24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 0.2, 3, 250);
+
+
+            if (pattern == "left" || pattern == "middle"){
+                // just use mech
+                encoderDrive(72 * COUNTS_PER_INCH, -72 * COUNTS_PER_INCH, -72 * COUNTS_PER_INCH, 72 * COUNTS_PER_INCH, 0.75, 10, 250);
+            }else{  // right but need for N/A
+                encoderDrive(8 * COUNTS_PER_INCH, -8 * COUNTS_PER_INCH, -8 * COUNTS_PER_INCH, 8 * COUNTS_PER_INCH, 0.1, 2, 250);
+                // use mech
+                encoderDrive(64 * COUNTS_PER_INCH, -64 * COUNTS_PER_INCH, -64 * COUNTS_PER_INCH, 64 * COUNTS_PER_INCH, 0.75, 10, 250);
+            }
+
+            encoderDrive(-12 * COUNTS_PER_INCH, 12 * COUNTS_PER_INCH, 12 * COUNTS_PER_INCH, -12 * COUNTS_PER_INCH, 0.2, 2, 250);
+
+            // yellow stones now if there is time
         }
     }
 
