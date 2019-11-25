@@ -88,7 +88,7 @@ public class FullAuto2 extends LinearOpMode {
 
             runtime.reset();
 
-            while(runtime.milliseconds() <= 5000) {         // 5 seconds
+            while(runtime.milliseconds() <= 2000) {         // 5 seconds
                 if (skystoneDetector.isFound()) {
                     if (skystoneDetector.getScreenPosition().x < 120) {
                         pattern = "left";
@@ -109,31 +109,29 @@ public class FullAuto2 extends LinearOpMode {
             sleep(100);
 
             //drives straight for 24 inches
-            encoderDrive(24, 'y', 0.2, 3, 250);
+            encoderDrive(24, 'y', 1, 50, 250);
 
 
             if(pattern == "left"){
                 //drive left 8 inches
-                encoderDrive(-8, 'x', 0.1, 2, 250);
+                encoderDrive(-8, 'x', 1, 50, 250);
                 // use mech
                 //
-                encoderDrive(56, 'x', 0.75, 2, 250);
+                encoderDrive(56, 'x', 1, 50, 250);
             }else if (pattern == "middle"){
                 // just use mech
-                encoderDrive(48, 'x', 0.75, 2, 250);
+                encoderDrive(48, 'x', 1, 50, 250);
             }else{  // right but need for N/A
-                encoderDrive(8, 'x', 0.1, 2, 250);
+                encoderDrive(8, 'x', 1, 50, 250);
                 // use mech
-                encoderDrive(40, 'x', 0.75, 2, 250);
+                encoderDrive(40, 'x', 1, 50, 250);
             }
 
-            encoderDrive(-24, 'x', 0.75, 2, 250);
+            encoderDrive(-24, 'x', 1, 50, 250);
 
-            encoderDrive(-24, 'y', 0.75, 2, 250);
+            encoderDrive(-24, 'y', 1, 50, 250);
 
-            encoderDrive(-48, 'x', 0.75, 2, 250);
-
-            //encoderDrive(4 * COUNTS_PER_INCH, -4 * COUNTS_PER_INCH, -4 * COUNTS_PER_INCH, 4 * COUNTS_PER_INCH, 0.75, 2, 250);
+            encoderDrive(-48, 'x', 1, 50, 250);
 
             runtime.reset();
 
