@@ -88,9 +88,9 @@ public class FullAuto2 extends LinearOpMode {
 
             runtime.reset();
 
-            while(runtime.milliseconds() <= 2000) {         // 5 seconds
+            while(runtime.milliseconds() <= 1000) {         // 1 second
                 if (skystoneDetector.isFound()) {
-                    if (skystoneDetector.getScreenPosition().x < 120) {
+                    if (skystoneDetector.getScreenPosition().x < 80) {
                         pattern = "left";
                     } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160) {
                         pattern = "middle";
@@ -106,66 +106,47 @@ public class FullAuto2 extends LinearOpMode {
 
             runtime.reset();
 
-            sleep(100);
+            //sleep(100);
 
             //drives straight for 24 inches
-            encoderDrive(24, 'y', 1, 50, 250);
+            encoderDrive(24 + 8, 'y', 1, 50, 50);
 
 
-            if(pattern == "left"){
+            if(pattern.equals("left")){
                 //drive left 8 inches
-                encoderDrive(-8, 'x', 1, 50, 250);
+                encoderDrive(-8, 'x', 1, 50, 50);
                 // use mech
                 //
-                encoderDrive(56, 'x', 1, 50, 250);
-            }else if (pattern == "middle"){
+                encoderDrive(56, 'x', 1, 50, 50);
+            }else if (pattern.equals("middle")){
                 // just use mech
-                encoderDrive(48, 'x', 1, 50, 250);
+                encoderDrive(48, 'x', 1, 50, 50);
             }else{  // right but need for N/A
-                encoderDrive(8, 'x', 1, 50, 250);
+                encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
-                encoderDrive(40, 'x', 1, 50, 250);
+                encoderDrive(40, 'x', 1, 50, 50);
             }
 
-            encoderDrive(-24, 'x', 1, 50, 250);
+            encoderDrive(-24, 'x', 1, 50, 50);
 
-            encoderDrive(-24, 'y', 1, 50, 250);
+            encoderDrive(-24, 'y', 1, 50, 50);
 
-            encoderDrive(-48, 'x', 1, 50, 250);
-
-            runtime.reset();
-
-            while(runtime.milliseconds() <= 5000) {         // 5 seconds
-                if (skystoneDetector.isFound()) {
-                    if (skystoneDetector.getScreenPosition().x < 120) {
-                        pattern = "left";
-                    } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160) {
-                        pattern = "middle";
-                    } else {
-                        pattern = "right";
-                    }
-                }
-
-                telemetry.addData("X-Value: ", skystoneDetector.getScreenPosition().x);
-                telemetry.addData("Pattern: ", pattern);
-                telemetry.update();
-            }
-
-            runtime.reset();
-
-            encoderDrive(24, 'y', 0.2, 3, 250);
+            encoderDrive(-48, 'x', 1, 50, 50);
 
 
-            if (pattern == "left" || pattern == "middle"){
+            encoderDrive(24 + 8, 'y', 1, 50, 50);
+
+
+            if (pattern.equals("left") || pattern.equals("middle")){
                 // just use mech
-                encoderDrive(72, 'x', 0.75, 2, 250);
+                encoderDrive(72, 'x', 1, 50, 50);
             }else{  // right but need for N/A
-                encoderDrive(8, 'x', 0.1, 2, 250);
+                encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
-                encoderDrive(64, 'x', 0.75, 2, 250);
+                encoderDrive(64, 'x', 1, 50, 50);
             }
 
-            encoderDrive(-12, 'x', 0.2, 2, 250);
+            encoderDrive(-12, 'x', 1, 50, 50);
 
             // yellow stones now if there is time
         }
