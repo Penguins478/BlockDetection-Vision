@@ -149,6 +149,7 @@ public class FullAuto2 extends LinearOpMode {
             encoderDrive(-12, 'x', 1, 50, 50);
 
             // yellow stones now if there is time
+            stop();
         }
     }
 
