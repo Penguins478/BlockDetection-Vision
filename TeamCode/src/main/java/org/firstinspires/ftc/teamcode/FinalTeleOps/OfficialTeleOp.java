@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.FinalTeleOps;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@TeleOp(name = "Final Tele Op 2", group = "tele op")
-public class FinalTeleOp2 extends OpMode {
+@TeleOp(name = "Official teleop", group = "tele op")
+public class OfficialTeleOp extends OpMode {
     private DcMotor tl_motor;
     private DcMotor tr_motor;
     private DcMotor bl_motor;

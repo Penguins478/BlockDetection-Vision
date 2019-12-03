@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.FinalAutos;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -11,13 +11,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.SkystoneDetector2;
+import org.firstinspires.ftc.teamcode.StoneDetector;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name = "Full Autonomous 2", group = "Autonomous")
-//@Disabled
-public class FullAuto2 extends LinearOpMode {
+@Autonomous(name = "Red 2 skystones", group = "Autonomous")
+public class RedAlliance2Skystones extends LinearOpMode {
 
     private SkystoneDetector2 skystoneDetector = new SkystoneDetector2();
     private StoneDetector detector = new StoneDetector();
@@ -92,7 +93,7 @@ public class FullAuto2 extends LinearOpMode {
                 if (skystoneDetector.isFound()) {
                     if (skystoneDetector.getScreenPosition().x < 80) {
                         pattern = "left";
-                    } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160) {
+                    } else if (skystoneDetector.getScreenPosition().x < 160) {
                         pattern = "middle";
                     } else {
                         pattern = "right";
@@ -106,8 +107,6 @@ public class FullAuto2 extends LinearOpMode {
 
             runtime.reset();
 
-            //sleep(100);
-
             //drives straight for 24 inches
             encoderDrive(24 + 8, 'y', 1, 50, 50);
 
@@ -116,40 +115,47 @@ public class FullAuto2 extends LinearOpMode {
                 //drive left 8 inches
                 encoderDrive(-8, 'x', 1, 50, 50);
                 // use mech
-                //
+                encoderDrive(-3,'y',1,50,50);
                 encoderDrive(56, 'x', 1, 50, 50);
             }else if (pattern.equals("middle")){
                 // just use mech
+                encoderDrive(-3,'y',1,50,50);
                 encoderDrive(48, 'x', 1, 50, 50);
             }else{  // right but need for N/A
                 encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
+                encoderDrive(-3,'y',1,50,50);
                 encoderDrive(40, 'x', 1, 50, 50);
             }
 
+            //use mech
+
             encoderDrive(-24, 'x', 1, 50, 50);
 
-            encoderDrive(-24, 'y', 1, 50, 50);
+            encoderDrive(-24-8+3, 'y', 1, 50, 50);
 
             encoderDrive(-48, 'x', 1, 50, 50);
 
 
-            encoderDrive(24 + 8, 'y', 1, 50, 50);
+            encoderDrive(24+8, 'y', 1, 50, 50);
 
 
             if (pattern.equals("left") || pattern.equals("middle")){
                 // just use mech
+                encoderDrive(-3,'y',1,50,50);
                 encoderDrive(72, 'x', 1, 50, 50);
             }else{  // right but need for N/A
                 encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
+                encoderDrive(-3,'y',1,50,50);
                 encoderDrive(64, 'x', 1, 50, 50);
             }
 
+            //use mech
+
             encoderDrive(-12, 'x', 1, 50, 50);
 
-            // yellow stones now if there is time
-            stop();
+            break;
         }
     }
 
