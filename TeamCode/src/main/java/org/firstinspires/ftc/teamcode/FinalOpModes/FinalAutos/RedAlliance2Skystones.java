@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.FinalAutos;
+package org.firstinspires.ftc.teamcode.FinalOpModes.FinalAutos;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,8 +17,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name = "Blue 2 skystones", group = "Autonomous")
-public class BlueAlliance2Skystones extends LinearOpMode {
+@Autonomous(name = "RedAlliance2Skystones", group = "Autonomous")
+//@Disabled
+public class RedAlliance2Skystones extends LinearOpMode {
 
     private SkystoneDetector2 skystoneDetector = new SkystoneDetector2();
     private StoneDetector detector = new StoneDetector();
@@ -92,7 +94,7 @@ public class BlueAlliance2Skystones extends LinearOpMode {
                 if (skystoneDetector.isFound()) {
                     if (skystoneDetector.getScreenPosition().x < 80) {
                         pattern = "left";
-                    } else if (skystoneDetector.getScreenPosition().x < 160) {
+                    } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160) {
                         pattern = "middle";
                     } else {
                         pattern = "right";
@@ -106,6 +108,8 @@ public class BlueAlliance2Skystones extends LinearOpMode {
 
             runtime.reset();
 
+            //sleep(100);
+
             //drives straight for 24 inches
             encoderDrive(24 + 8, 'y', 1, 50, 50);
 
@@ -114,45 +118,43 @@ public class BlueAlliance2Skystones extends LinearOpMode {
                 //drive left 8 inches
                 encoderDrive(-8, 'x', 1, 50, 50);
                 // use mech
-                encoderDrive(-3,'y',1,50,50);
-                encoderDrive(-40, 'x', 1, 50, 50);
+                encoderDrive(-3, 'y', 1, 50, 50);
+                //
+                encoderDrive(56, 'x', 1, 50, 50);
             }else if (pattern.equals("middle")){
                 // just use mech
-                encoderDrive(-3,'y',1,50,50);
-                encoderDrive(-48, 'x', 1, 50, 50);
+                encoderDrive(-3, 'y', 1, 50, 50);
+                encoderDrive(48, 'x', 1, 50, 50);
             }else{  // right but need for N/A
                 encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
-                encoderDrive(-3,'y',1,50,50);
-                encoderDrive(-56, 'x', 1, 50, 50);
+                encoderDrive(-3, 'y', 1, 50, 50);
+                encoderDrive(40, 'x', 1, 50, 50);
             }
 
-            //use mech
-
-            encoderDrive(24, 'x', 1, 50, 50);
+            encoderDrive(-24, 'x', 1, 50, 50);
 
             encoderDrive(-24-8+3, 'y', 1, 50, 50);
 
-            encoderDrive(48, 'x', 1, 50, 50);
+            encoderDrive(-48, 'x', 1, 50, 50);
 
 
-            encoderDrive(24+8, 'y', 1, 50, 50);
+            encoderDrive(24 + 8, 'y', 1, 50, 50);
 
 
-            if (pattern.equals("right") || pattern.equals("middle")){
+            if (pattern.equals("left") || pattern.equals("middle")){
                 // just use mech
-                encoderDrive(-3,'y',1,50,50);
-                encoderDrive(-72, 'x', 1, 50, 50);
-            }else{  // left but need for N/A
-                encoderDrive(-8, 'x', 1, 50, 50);
+                encoderDrive(-3, 'y', 1, 50, 50);
+                encoderDrive(72, 'x', 1, 50, 50);
+            }else{  // right but need for N/A
+                encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
-                encoderDrive(-3,'y',1,50,50);
-                encoderDrive(-64, 'x', 1, 50, 50);
+                encoderDrive(-3, 'y', 1, 50, 50);
+                encoderDrive(64, 'x', 1, 50, 50);
             }
 
-            //use mech
+            encoderDrive(-12, 'x', 1, 50, 50);
 
-            encoderDrive(12, 'x', 1, 50, 50);
 
             break;
         }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.FinalAutos;
+package org.firstinspires.ftc.teamcode.FinalOpModes.FinalAutos;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -17,8 +17,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name = "Red 2 skystones", group = "Autonomous")
-public class RedAlliance2Skystones extends LinearOpMode {
+@Autonomous(name = "Blue 2 skystones", group = "Autonomous")
+//@Disabled
+public class BlueAlliance2Skystones extends LinearOpMode {
 
     private SkystoneDetector2 skystoneDetector = new SkystoneDetector2();
     private StoneDetector detector = new StoneDetector();
@@ -116,44 +117,44 @@ public class RedAlliance2Skystones extends LinearOpMode {
                 encoderDrive(-8, 'x', 1, 50, 50);
                 // use mech
                 encoderDrive(-3,'y',1,50,50);
-                encoderDrive(56, 'x', 1, 50, 50);
+                encoderDrive(-40, 'x', 1, 50, 50);
             }else if (pattern.equals("middle")){
                 // just use mech
                 encoderDrive(-3,'y',1,50,50);
-                encoderDrive(48, 'x', 1, 50, 50);
+                encoderDrive(-48, 'x', 1, 50, 50);
             }else{  // right but need for N/A
                 encoderDrive(8, 'x', 1, 50, 50);
                 // use mech
                 encoderDrive(-3,'y',1,50,50);
-                encoderDrive(40, 'x', 1, 50, 50);
+                encoderDrive(-56, 'x', 1, 50, 50);
             }
 
             //use mech
 
-            encoderDrive(-24, 'x', 1, 50, 50);
+            encoderDrive(24, 'x', 1, 50, 50);
 
             encoderDrive(-24-8+3, 'y', 1, 50, 50);
 
-            encoderDrive(-48, 'x', 1, 50, 50);
+            encoderDrive(48, 'x', 1, 50, 50);
 
 
             encoderDrive(24+8, 'y', 1, 50, 50);
 
 
-            if (pattern.equals("left") || pattern.equals("middle")){
+            if (pattern.equals("right") || pattern.equals("middle")){
                 // just use mech
                 encoderDrive(-3,'y',1,50,50);
-                encoderDrive(72, 'x', 1, 50, 50);
-            }else{  // right but need for N/A
-                encoderDrive(8, 'x', 1, 50, 50);
+                encoderDrive(-72, 'x', 1, 50, 50);
+            }else{  // left but need for N/A
+                encoderDrive(-8, 'x', 1, 50, 50);
                 // use mech
                 encoderDrive(-3,'y',1,50,50);
-                encoderDrive(64, 'x', 1, 50, 50);
+                encoderDrive(-64, 'x', 1, 50, 50);
             }
 
             //use mech
 
-            encoderDrive(-12, 'x', 1, 50, 50);
+            encoderDrive(12, 'x', 1, 50, 50);
 
             break;
         }

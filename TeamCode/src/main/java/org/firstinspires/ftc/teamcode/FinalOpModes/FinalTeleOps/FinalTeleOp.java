@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.FinalOpModes.FinalTeleOps;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp (name = "FinalTeleOp", group = "TeleOp") // go organize it
+@TeleOp (name = "FinalTeleOp2", group = "TeleOp") // go organize it
 //@Disabled
 public class FinalTeleOp extends LinearOpMode {
 
