@@ -141,9 +141,9 @@ public class OfficialTeleOp extends OpMode {
             tilt_motor.setPower(0);
         }
 
-        if(gamepad2.dpad_up && slide_motor.getCurrentPosition() < 500){
+        if(gamepad2.dpad_up && slide_motor.getCurrentPosition() <= 1225){
             slide_motor.setPower(0.75);
-        }else if(gamepad2.dpad_down){
+        }else if(gamepad2.dpad_down && slide_motor.getCurrentPosition() >= 25){
             slide_motor.setPower(-0.75);
         }else{
             slide_motor.setPower(0);
