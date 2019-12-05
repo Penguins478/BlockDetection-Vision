@@ -136,7 +136,7 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
             encoderDrive(-24-8+3, 'y', 1, 50, 50);
 
-            encoderDrive(-48, 'x', 1, 50, 50);
+            encoderDrive(-48 - 24, 'x', 1, 50, 50); // added an extra -24 to compensate
 
 
             encoderDrive(24 + 8, 'y', 1, 50, 50);
@@ -237,8 +237,9 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
     private boolean adjust_motor(DcMotor motor, double distance, double start, double power, double error) {
         double coeff = (start + distance - motor.getCurrentPosition()) / distance;
-        if (coeff < 0.25) {
-            coeff = 0.25;
+        coeff += ((1 - coeff) / 2);
+        if (coeff < 0.5) {
+            coeff = 0.5;
         }
         if (motor.getCurrentPosition() < start + distance - error) {
             motor.setPower(coeff * power);

@@ -12,11 +12,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp (name = "FinalTeleOp2", group = "TeleOp") // go organize it
 //@Disabled
 public class FinalTeleOp extends LinearOpMode {
+
+    DcMotor tilt_motor;
+    DcMotor slide_motor;
+
+    private static final int MAX = 1225;
+    private static final int MIN = 25;
+
+    Servo servo;
 
     BNO055IMU imu;
 
@@ -45,6 +55,20 @@ public class FinalTeleOp extends LinearOpMode {
         tr_motor = hardwareMap.dcMotor.get("tr_motor");
         bl_motor = hardwareMap.dcMotor.get("bl_motor");
         br_motor = hardwareMap.dcMotor.get("br_motor");
+
+        servo = hardwareMap.servo.get("stone_servo");
+
+        tilt_motor = hardwareMap.dcMotor.get("tilt_motor");
+        slide_motor = hardwareMap.dcMotor.get("slide_motor");
+
+        tilt_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slide_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        tilt_motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        slide_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        tilt_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slide_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         tr_motor.setDirection(DcMotorSimple.Direction.REVERSE);
         br_motor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -148,7 +172,32 @@ public class FinalTeleOp extends LinearOpMode {
                 }
             }
 
+            if(gamepad2.dpad_up){
+                tilt_motor.setPower(0.75);
+            }else if(gamepad2.dpad_down){
+                tilt_motor.setPower(-0.75);
+            }else{
+                tilt_motor.setPower(0);
+            }
 
+            if(slide_motor.getCurrentPosition() < MAX && gamepad2.y){
+                slide_motor.setPower(0.75);
+            }else if(slide_motor.getCurrentPosition() > MIN && gamepad2.a){
+                slide_motor.setPower(-0.75);
+            }else{
+                slide_motor.setPower(0);
+            }
+
+            if(gamepad2.right_bumper){
+                servo.setPosition(1);
+            }else if(gamepad2.left_bumper){
+                servo.setPosition(0);
+            }
+
+            telemetry.addData("Servo Position: ", servo.getPosition());
+            telemetry.addData("Encoder Position (tilt_motor) : ", tilt_motor.getCurrentPosition());
+            telemetry.addData("Encoder Position (slide_motor) : ", slide_motor.getCurrentPosition());
+            telemetry.update();
 
             if(gamepad1.x) enableDpad = !enableDpad;
 
