@@ -37,8 +37,7 @@ public class OfficialTeleOp extends OpMode {
     private double y;
     private double r;
     private double angle;
-    private boolean accelerate;
-    private boolean change_acceleration_mode;
+    private double coeff;
 
     @Override
     public void init() {
@@ -78,7 +77,7 @@ public class OfficialTeleOp extends OpMode {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
-        accelerate = true;
+        coeff = 1.0;
     }
 
     @Override
@@ -90,11 +89,6 @@ public class OfficialTeleOp extends OpMode {
     public void loop() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
         angle = angles.firstAngle;
-        change_acceleration_mode = gamepad1.left_bumper;
-
-        if (change_acceleration_mode) {
-            accelerate = !accelerate;
-        }
 
         x = -gamepad1.left_stick_x;
         y = gamepad1.left_stick_y;
@@ -110,6 +104,12 @@ public class OfficialTeleOp extends OpMode {
             y = scalar * Math.sin(theta);
         }
 
+        if(gamepad1.left_bumper){
+            coeff = 0.5;
+        }else{
+            coeff = 1.0;
+        }
+
         tl_power = y + x + r;
         tr_power = y - x - r;
         bl_power = y - x + r;
@@ -120,17 +120,10 @@ public class OfficialTeleOp extends OpMode {
         bl_power = Range.clip(bl_power, -1, 1);
         br_power = Range.clip(br_power, -1, 1);
 
-        if (accelerate) {
-            tl_power = slow_accelerate(tl_power, tl_prev_power);
-            tr_power = slow_accelerate(tr_power, tr_prev_power);
-            bl_power = slow_accelerate(bl_power, bl_prev_power);
-            br_power = slow_accelerate(br_power, br_prev_power);
-        }
-
-        tl_motor.setPower(tl_power);
-        tr_motor.setPower(tr_power);
-        bl_motor.setPower(bl_power);
-        br_motor.setPower(br_power);
+        tl_motor.setPower(coeff*tl_power);
+        tr_motor.setPower(coeff*tr_power);
+        bl_motor.setPower(coeff*bl_power);
+        br_motor.setPower(coeff*br_power);
 
         if(gamepad2.y && tilt_motor.getCurrentPosition() <= 330){
             tilt_motor.setPower(0.75);
@@ -159,6 +152,7 @@ public class OfficialTeleOp extends OpMode {
         bl_prev_power = bl_power;
         br_prev_power = br_power;
 
+        telemetry.addData("Speed Multiplier: ", coeff);
         telemetry.addData("tl motor speed", tl_power);
         telemetry.addData("tr motor speed", tr_power);
         telemetry.addData("bl motor speed", bl_power);
@@ -169,16 +163,7 @@ public class OfficialTeleOp extends OpMode {
 
         telemetry.addData("angle", angle);
 
-        telemetry.addData("acceleration", accelerate);
-
         telemetry.update();
-    }
-
-    private double slow_accelerate(double power, double prev_power) {
-        if (power > prev_power + 0.01 || power < prev_power - 0.01) {
-            power = prev_power + (power - prev_power) / 5;
-        }
-        return power;
     }
 
     @Override
