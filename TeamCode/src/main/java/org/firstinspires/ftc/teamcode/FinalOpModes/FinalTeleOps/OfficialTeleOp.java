@@ -53,7 +53,6 @@ public class OfficialTeleOp extends OpMode {
 
         tr_motor.setDirection(DcMotorSimple.Direction.REVERSE);
         br_motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        tilt_motor.setDirection(DcMotorSimple.Direction.REVERSE);
         slide_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         tl_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -133,9 +132,9 @@ public class OfficialTeleOp extends OpMode {
         bl_motor.setPower(bl_power);
         br_motor.setPower(br_power);
 
-        if(gamepad2.y){
+        if(gamepad2.y && tilt_motor.getCurrentPosition() <= 330){
             tilt_motor.setPower(0.75);
-        }else if(gamepad2.x){
+        }else if(gamepad2.x && tilt_motor.getCurrentPosition() >= 130){
             tilt_motor.setPower(-0.75);
         }else{
             tilt_motor.setPower(0);
