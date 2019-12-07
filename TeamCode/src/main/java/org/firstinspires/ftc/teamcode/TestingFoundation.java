@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.FinalOpModes.FinalAutos;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -6,36 +6,31 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.SkystoneDetector2;
-import org.firstinspires.ftc.teamcode.StoneDetector;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@Autonomous(name = "RedAlliance2Skystones", group = "Autonomous")
+@Autonomous(name = "TestingFoundation", group = "Autonomous")
 //@Disabled
-public class RedAlliance2Skystones extends LinearOpMode {
-
-    private SkystoneDetector2 skystoneDetector = new SkystoneDetector2();
-    private StoneDetector detector = new StoneDetector();
-    private OpenCvCamera phoneCam;
-
-    String pattern = "N/A";
+public class TestingFoundation extends LinearOpMode {
 
     private DcMotor tl_motor;
     private DcMotor tr_motor;
     private DcMotor bl_motor;
     private DcMotor br_motor;
 
+    private Servo servo_f;
+
     private static final double COUNTS_PER_MOTOR_REV = 1120;
     private static final double GEAR_RATIO = 2;
     private static final double WHEEL_DIAMETER_INCHES = 2.9527559055;
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * Math.PI * GEAR_RATIO);
+
+    private static final double FOUNDATION_LENGTH_CENTIMETERS = 87;
+
+    private static final double CENTI_TO_IN = 0.3937007874;
 
     private BNO055IMU imu;
     private BNO055IMU.Parameters params;
@@ -43,20 +38,11 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
     private static final double ANGLE_ERROR = 5;
 
-    ElapsedTime runtime = new ElapsedTime();
+    public void runOpMode() {
 
-    public void runOpMode(){
+        servo_f = hardwareMap.servo.get("servo_f");
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
-        phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        phoneCam.openCameraDevice();
-        phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-        phoneCam.setPipeline(skystoneDetector);
-
-        detector.useDefaults();
 
         tl_motor = hardwareMap.dcMotor.get("tl_motor");
         tr_motor = hardwareMap.dcMotor.get("tr_motor");
@@ -82,84 +68,27 @@ public class RedAlliance2Skystones extends LinearOpMode {
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
 
-        runtime.reset();
-
         waitForStart();
 
-        while(opModeIsActive()){
+        while (opModeIsActive()){
 
-            runtime.reset();
+            encoderDrive(FOUNDATION_LENGTH_CENTIMETERS * CENTI_TO_IN * 0.5, 'x', 1, 10, 50);
 
-            while(runtime.milliseconds() <= 2500) {         // 1 second
-                if (skystoneDetector.isFound()) {
-                    if (skystoneDetector.getScreenPosition().x < 80) {
-                        pattern = "left";
-                    } else if (80 <= skystoneDetector.getScreenPosition().x && skystoneDetector.getScreenPosition().x < 160) {
-                        pattern = "middle";
-                    } else {
-                        pattern = "right";
-                    }
-                }
+            encoderDrive(-8-24-1, 'y', 1, 10, 50);
 
-                telemetry.addData("X-Value: ", skystoneDetector.getScreenPosition().x);
-                telemetry.addData("Pattern: ", pattern);
-                telemetry.update();
-            }
+            servo_f.setPosition(1);
 
-            runtime.reset();
+            encoderDrive(8+24+1, 'y', 1, 10, 50);
 
-            //sleep(100);
+            servo_f.setPosition(0);
 
-            //drives straight for 24 inches
-            encoderDrive(24 + 8, 'y', 1, 50, 50);
-
-
-            if(pattern.equals("left")){
-                //drive left 8 inches
-                encoderDrive(-8, 'x', 1, 50, 50);
-                // use mech
-                encoderDrive(-3, 'y', 1, 50, 50);
-                //
-                encoderDrive(56, 'x', 1, 50, 50);
-            }else if (pattern.equals("middle")){
-                // just use mech
-                encoderDrive(-3, 'y', 1, 50, 50);
-                encoderDrive(48, 'x', 1, 50, 50);
-            }else{  // right but need for N/A
-                encoderDrive(8, 'x', 1, 50, 50);
-                // use mech
-                encoderDrive(-3, 'y', 1, 50, 50);
-                encoderDrive(40, 'x', 1, 50, 50);
-            }
-
-            encoderDrive(-24, 'x', 1, 50, 50);
-
-            encoderDrive(-24-8+3+3, 'y', 1, 50, 50);    // added a +3
-
-            encoderDrive(-48 - 24, 'x', 1, 50, 50); // added an extra -24 to compensate
-
-
-            encoderDrive(24 + 8, 'y', 1, 50, 50);
-
-
-            if (pattern.equals("left") || pattern.equals("middle")){
-                // just use mech
-                encoderDrive(-3, 'y', 1, 50, 50);
-                encoderDrive(72, 'x', 1, 50, 50);
-            }else{  // right but need for N/A
-                encoderDrive(8, 'x', 1, 50, 50);
-                // use mech
-                encoderDrive(-3, 'y', 1, 50, 50);
-                encoderDrive(64, 'x', 1, 50, 50);
-            }
-
-            encoderDrive(-12, 'x', 1, 50, 50);
+            encoderDrive((-1 * (FOUNDATION_LENGTH_CENTIMETERS * CENTI_TO_IN * 0.5)) - 36, 'x', 1, 10, 50);
 
 
             break;
         }
-    }
 
+    }
     private void encoderDrive(double inches, char direction, double power, double error, long timeout) {
         double dist = inches * COUNTS_PER_INCH;
 

@@ -20,13 +20,14 @@ import com.qualcomm.robotcore.util.Range;
 //@Disabled
 public class FinalTeleOp extends LinearOpMode {
 
-    DcMotor tilt_motor;
-    DcMotor slide_motor;
+    private DcMotor tilt_motor;
+    private DcMotor slide_motor;
 
     private static final int MAX = 1225;
     private static final int MIN = 25;
 
-    Servo servo;
+    private Servo servo;
+    private Servo servo_f;
 
     BNO055IMU imu;
 
@@ -37,6 +38,8 @@ public class FinalTeleOp extends LinearOpMode {
     private DcMotor tr_motor;
     private DcMotor bl_motor;
     private DcMotor br_motor;
+
+    private double mult = 1;
 
     public void runOpMode() {
 
@@ -60,6 +63,8 @@ public class FinalTeleOp extends LinearOpMode {
 
         tilt_motor = hardwareMap.dcMotor.get("tilt_motor");
         slide_motor = hardwareMap.dcMotor.get("slide_motor");
+
+        servo_f = hardwareMap.servo.get("servo_f");
 
         tilt_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -98,6 +103,13 @@ public class FinalTeleOp extends LinearOpMode {
 
             if (gamepad1.y) robotPerspective = !robotPerspective;
 
+            if(gamepad1.left_bumper){
+                mult = 0.5;
+            }
+            if(gamepad1.right_bumper){
+                mult = 1;
+            }
+
 
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             double xPos = gamepad1.right_stick_x;
@@ -124,10 +136,10 @@ public class FinalTeleOp extends LinearOpMode {
                 }
 
 
-                tl_motor.setPower(scalar * (yPos - xPos + rot));
-                tr_motor.setPower(scalar * (yPos + xPos - rot));
-                bl_motor.setPower(scalar * (yPos + xPos + rot));
-                br_motor.setPower(scalar * (yPos - xPos - rot));
+                tl_motor.setPower(mult * scalar * (yPos - xPos + rot));
+                tr_motor.setPower(mult * scalar * (yPos + xPos - rot));
+                bl_motor.setPower(mult * scalar * (yPos + xPos + rot));
+                br_motor.setPower(mult * scalar * (yPos - xPos - rot));
 
 
 
@@ -159,10 +171,10 @@ public class FinalTeleOp extends LinearOpMode {
                         scalar = 1;
                     }
 
-                    tl_motor.setPower(scalar * (Math.sin(adjustedAngle) - Math.cos(adjustedAngle) + rot));
-                    tr_motor.setPower(scalar * (Math.sin(adjustedAngle) + Math.cos(adjustedAngle) - rot));
-                    bl_motor.setPower(scalar * (Math.sin(adjustedAngle) + Math.cos(adjustedAngle) + rot));
-                    br_motor.setPower(scalar * (Math.sin(adjustedAngle) - Math.cos(adjustedAngle) - rot));
+                    tl_motor.setPower(mult * scalar * (Math.sin(adjustedAngle) - Math.cos(adjustedAngle) + rot));
+                    tr_motor.setPower(mult * scalar * (Math.sin(adjustedAngle) + Math.cos(adjustedAngle) - rot));
+                    bl_motor.setPower(mult * scalar * (Math.sin(adjustedAngle) + Math.cos(adjustedAngle) + rot));
+                    br_motor.setPower(mult * scalar * (Math.sin(adjustedAngle) - Math.cos(adjustedAngle) - rot));
 
                 }else {
                     tl_motor.setPower(0);
@@ -192,6 +204,12 @@ public class FinalTeleOp extends LinearOpMode {
                 servo.setPosition(1);
             }else if(gamepad2.left_bumper){
                 servo.setPosition(0);
+            }
+
+            if(gamepad2.right_trigger != 0){
+                servo_f.setPosition(1);
+            }else{
+                servo_f.setPosition(0);
             }
 
             telemetry.addData("Servo Position: ", servo.getPosition());
@@ -266,6 +284,7 @@ public class FinalTeleOp extends LinearOpMode {
 
             }
 
+            telemetry.addData("Speed Multiplier: ", mult);
             telemetry.addData("Speed tl", tl_motor.getPower());
             telemetry.addData("Speed tr", tr_motor.getPower());
             telemetry.addData("Speed bl", bl_motor.getPower());
