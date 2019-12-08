@@ -61,10 +61,10 @@ public class FinalTeleOp extends LinearOpMode {
 
         servo = hardwareMap.servo.get("stone_servo");
 
+        servo_f = hardwareMap.servo.get("servo_f");
+
         tilt_motor = hardwareMap.dcMotor.get("tilt_motor");
         slide_motor = hardwareMap.dcMotor.get("slide_motor");
-
-        servo_f = hardwareMap.servo.get("servo_f");
 
         tilt_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -184,9 +184,9 @@ public class FinalTeleOp extends LinearOpMode {
                 }
             }
 
-            if(gamepad2.dpad_up){
+            if(gamepad2.dpad_up && tilt_motor.getCurrentPosition() < -2){
                 tilt_motor.setPower(0.75);
-            }else if(gamepad2.dpad_down){
+            }else if(gamepad2.dpad_down && tilt_motor.getCurrentPosition() > -310){
                 tilt_motor.setPower(-0.75);
             }else{
                 tilt_motor.setPower(0);

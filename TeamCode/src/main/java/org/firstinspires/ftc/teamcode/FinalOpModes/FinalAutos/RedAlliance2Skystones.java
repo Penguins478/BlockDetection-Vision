@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -26,6 +27,14 @@ public class RedAlliance2Skystones extends LinearOpMode {
     private OpenCvCamera phoneCam;
 
     String pattern = "N/A";
+
+    private Servo servo;
+
+    private DcMotor tilt_motor;
+    private DcMotor slide_motor;
+
+    private static final int MAX = 1225;
+    private static final int MIN = 25;
 
     private DcMotor tl_motor;
     private DcMotor tr_motor;
@@ -58,6 +67,8 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
         detector.useDefaults();
 
+        servo = hardwareMap.servo.get("stone_servo");
+
         tl_motor = hardwareMap.dcMotor.get("tl_motor");
         tr_motor = hardwareMap.dcMotor.get("tr_motor");
         bl_motor = hardwareMap.dcMotor.get("bl_motor");
@@ -78,6 +89,18 @@ public class RedAlliance2Skystones extends LinearOpMode {
         bl_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        tilt_motor = hardwareMap.dcMotor.get("tilt_motor");
+        slide_motor = hardwareMap.dcMotor.get("slide_motor");
+
+        tilt_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slide_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        tilt_motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        slide_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        tilt_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slide_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         params = new BNO055IMU.Parameters();
         params.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(params);
@@ -90,7 +113,7 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
             runtime.reset();
 
-            while(runtime.milliseconds() <= 2500) {         // 1 second
+            while(runtime.milliseconds() <= 1500) {         // 1.5 second
                 if (skystoneDetector.isFound()) {
                     if (skystoneDetector.getScreenPosition().x < 80) {
                         pattern = "left";
@@ -108,6 +131,8 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
             runtime.reset();
 
+
+
             //sleep(100);
 
             //drives straight for 24 inches
@@ -117,7 +142,7 @@ public class RedAlliance2Skystones extends LinearOpMode {
             if(pattern.equals("left")){
                 //drive left 8 inches
                 encoderDrive(-8, 'x', 1, 50, 50);
-                // use mech
+                //use mech
                 encoderDrive(-3, 'y', 1, 50, 50);
                 //
                 encoderDrive(56, 'x', 1, 50, 50);
@@ -136,7 +161,7 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
             encoderDrive(-24-8+3+3, 'y', 1, 50, 50);    // added a +3
 
-            encoderDrive(-48 - 24, 'x', 1, 50, 50); // added an extra -24 to compensate
+            encoderDrive(-48, 'x', 1, 50, 50); // added an extra -0 to compensate
 
 
             encoderDrive(24 + 8, 'y', 1, 50, 50);
@@ -155,6 +180,10 @@ public class RedAlliance2Skystones extends LinearOpMode {
 
             encoderDrive(-12, 'x', 1, 50, 50);
 
+            tl_motor.setPower(0);
+            tr_motor.setPower(0);
+            bl_motor.setPower(0);
+            br_motor.setPower(0);
 
             break;
         }
