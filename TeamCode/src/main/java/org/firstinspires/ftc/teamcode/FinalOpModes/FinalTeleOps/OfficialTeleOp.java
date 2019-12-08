@@ -125,9 +125,9 @@ public class OfficialTeleOp extends OpMode {
         bl_motor.setPower(coeff*bl_power);
         br_motor.setPower(coeff*br_power);
 
-        if(gamepad2.y && tilt_motor.getCurrentPosition() <= 330){
+        if(gamepad2.y && tilt_motor.getCurrentPosition() <= -2){
             tilt_motor.setPower(0.75);
-        }else if(gamepad2.x && tilt_motor.getCurrentPosition() >= 130){
+        }else if(gamepad2.x && tilt_motor.getCurrentPosition() >= -310){
             tilt_motor.setPower(-0.75);
         }else{
             tilt_motor.setPower(0);
